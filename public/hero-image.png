@@ -1,0 +1,258 @@
+'use client';
+
+import { useState, FormEvent } from 'react';
+import Image from 'next/image';
+import useSWR from 'swr';
+import { motion, AnimatePresence } from 'framer-motion';
+
+// Define API response structure for crypto data
+interface CryptoData {
+  [key: string]: {
+    usd: number;
+    usd_24h_change?: number;
+  };
+}
+
+// Fetcher for live prices
+const fetcher = (url: string) => fetch(url).then((res) => res.json());
+
+export default function HomePage() {
+  const { data, error } = useSWR<CryptoData>(
+    "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin,ethereum,solana&vs_currencies=usd&include_24hr_change=true",
+    fetcher,
+    { refreshInterval: 10000 }
+  );
+
+  // Controls whether the auth modal is open, and in which mode.
+  const [authMode, setAuthMode] = useState<"signin" | "signup" | null>(null);
+
+  // Form states (used by both sign in and sign up)
+  const [email, setEmail] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+
+  const handleSignInSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    // Handle sign-in logic here.
+    console.log('Signing in with', { email, password });
+    // On success, close modal.
+    setAuthMode(null);
+  };
+
+  const handleSignUpSubmit = (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    if (password !== confirmPassword) {
+      alert("Passwords don't match!");
+      return;
+    }
+    // Handle sign-up logic here.
+    console.log('Signing up with', { email, password });
+    // On success, close modal.
+    setAuthMode(null);
+  };
+
+  return (
+    <div className="min-h-screen bg-[#0a0a0a] text-white">
+      {/* Hero Section */}
+      <motion.section
+        className="flex flex-col md:flex-row items-center justify-between py-20 px-10 max-w-7xl mx-auto"
+        initial={{ opacity: 0, y: -50 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 1 }}
+      >
+        <div className="text-center md:text-left md:w-1/2">
+          <h1 className="text-6xl font-extrabold bg-gradient-to-r from-blue-400 to-blue-600 text-transparent bg-clip-text">
+            Trade Crypto with Confidence
+          </h1>
+          <p className="mt-4 text-lg text-gray-400">
+            Secure. Fast. Low Fees. The Future of Trading Starts Here.
+          </p>
+          <motion.button
+            onClick={() => setAuthMode("signin")}
+            className="mt-6 px-8 py-3 bg-blue-700 hover:bg-blue-500 text-white font-semibold text-lg rounded-lg shadow-lg transition duration-300"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Get Started
+          </motion.button>
+        </div>
+        <motion.div
+          className="mt-8 md:mt-0"
+          initial={{ scale: 0.8 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 0.8 }}
+        >
+          <Image src="/hero-image.png" alt="Trading" width={500} height={400} />
+        </motion.div>
+      </motion.section>
+
+      {/* Live Market Prices */}
+      <motion.section
+        className="py-10 text-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.2 }}
+      >
+        <h2 className="text-3xl font-semibold text-blue-400">Live Market Prices</h2>
+        <div className="w-full max-w-4xl mx-auto bg-[#1a1a1a] p-6 rounded-xl shadow-lg mt-6">
+          {error ? (
+            <p className="text-red-500">Failed to load prices</p>
+          ) : !data ? (
+            <p className="text-gray-400">Loading...</p>
+          ) : (
+            <table className="w-full text-left border-collapse">
+              <thead>
+                <tr className="border-b border-gray-700 text-gray-400">
+                  <th className="py-3">Asset</th>
+                  <th className="py-3">Price (USD)</th>
+                  <th className="py-3">24h Change</th>
+                </tr>
+              </thead>
+              <tbody>
+                {Object.entries(data).map(([key, value]) => (
+                  <tr key={key} className="border-b border-gray-700 hover:bg-[#222] transition">
+                    <td className="py-3 uppercase text-white font-semibold">{key}</td>
+                    <td className="py-3 text-blue-400">${value.usd.toFixed(2)}</td>
+                    <td
+                      className={`py-3 ${
+                        value.usd_24h_change && value.usd_24h_change > 0 ? "text-green-400" : "text-red-400"
+                      } font-semibold`}
+                    >
+                      {value.usd_24h_change ? value.usd_24h_change.toFixed(2) : "N/A"}%
+                    </td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          )}
+        </div>
+      </motion.section>
+
+      {/* CTA Section */}
+      <motion.section
+        className="py-16 text-center"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ duration: 1.5 }}
+      >
+        <h2 className="text-4xl font-semibold text-blue-500">Join All Chain Today</h2>
+        <motion.button
+          onClick={() => setAuthMode("signup")}
+          className="mt-6 px-8 py-3 bg-blue-700 hover:bg-blue-500 text-white font-semibold text-lg rounded-lg shadow-lg"
+          whileHover={{ scale: 1.1 }}
+          whileTap={{ scale: 0.95 }}
+        >
+          Create Account
+        </motion.button>
+      </motion.section>
+
+      {/* Footer */}
+      <footer className="py-10 bg-[#1a1a1a] text-center text-gray-500">
+        <p>&copy; 2025 All Chain. All rights reserved.</p>
+      </footer>
+
+      {/* Authentication Modal */}
+      <AnimatePresence>
+        {authMode && (
+          <motion.div
+            className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50"
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+          >
+            <motion.div
+              className="bg-[#0a0a0a] p-6 rounded-md max-w-md w-full relative"
+              initial={{ scale: 0.8 }}
+              animate={{ scale: 1 }}
+              exit={{ scale: 0.8 }}
+            >
+              <button
+                onClick={() => setAuthMode(null)}
+                className="absolute top-2 right-2 text-white"
+              >
+                X
+              </button>
+              {authMode === "signin" ? (
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Sign In</h2>
+                  <form onSubmit={handleSignInSubmit} className="space-y-4">
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                    <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md">
+                      Sign In
+                    </button>
+                  </form>
+                  <p className="mt-4 text-center">
+                    Don't have an account?{" "}
+                    <button
+                      onClick={() => setAuthMode("signup")}
+                      className="text-blue-400 underline"
+                    >
+                      Create Account
+                    </button>
+                  </p>
+                </div>
+              ) : (
+                <div>
+                  <h2 className="text-2xl font-bold mb-4">Create Account</h2>
+                  <form onSubmit={handleSignUpSubmit} className="space-y-4">
+                    <input
+                      type="email"
+                      placeholder="Email"
+                      value={email}
+                      onChange={(e) => setEmail(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                    <input
+                      type="password"
+                      placeholder="Password"
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                    <input
+                      type="password"
+                      placeholder="Confirm Password"
+                      value={confirmPassword}
+                      onChange={(e) => setConfirmPassword(e.target.value)}
+                      className="w-full p-2 border border-gray-300 rounded-md"
+                      required
+                    />
+                    <button type="submit" className="w-full bg-blue-500 text-white p-2 rounded-md">
+                      Create Account
+                    </button>
+                  </form>
+                  <p className="mt-4 text-center">
+                    Already have an account?{" "}
+                    <button
+                      onClick={() => setAuthMode("signin")}
+                      className="text-blue-400 underline"
+                    >
+                      Sign In
+                    </button>
+                  </p>
+                </div>
+              )}
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </div>
+  );
+}

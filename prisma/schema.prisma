@@ -1,0 +1,18 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"  // Change this to match your database (e.g., "mysql" or "sqlite")
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id            Int     @id @default(autoincrement())
+  email         String? @unique
+  name          String?
+  password      String?
+  walletAddress String? @unique
+  createdAt     DateTime @default(now()) 
+  updatedAt     DateTime @updatedAt 
+}
