@@ -5,8 +5,9 @@ const nextConfig = {
     styledComponents: true,
   },
   images: {
-    domains: ['coin-images.coingecko.com'], // ✅ important line
+    domains: ['coin-images.coingecko.com'], // ✅ for coin images
   },
+  output: 'export', // ✅ Enables static export for Netlify
   experimental: {},
   env: {
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.WALLETCONNECT_PROJECT_ID,
