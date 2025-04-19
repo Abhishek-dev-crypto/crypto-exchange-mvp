@@ -2,7 +2,6 @@
 
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
-import { signIn } from 'next-auth/react'; // NextAuth credentials provider
 
 const FirebaseSignIn = () => {
   const [email, setEmail] = useState('');
@@ -14,21 +13,12 @@ const FirebaseSignIn = () => {
     const auth = getAuth();
 
     try {
-      // 🔐 Firebase sign-in
       await signInWithEmailAndPassword(auth, email, password);
-
-      // 🔁 Sync with NextAuth
-      const result = await signIn('credentials', {
-        email,
-        password,
-        redirect: false, // disable automatic redirect
-      });
-
-      if (result?.error) {
-        setError(result.error);
-      }
-    } catch {
-      setError('Error signing in with Firebase.');
+      console.log("✅ Firebase email sign-in successful");
+      // Optional: Redirect or display success message here
+    } catch (err) {
+      setError('❌ Error signing in with Firebase.');
+      console.error(err);
     }
   };
 
