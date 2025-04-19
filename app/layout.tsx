@@ -1,12 +1,11 @@
-// app/layout.tsx
 import "../styles/globals.css";
 import type { Metadata } from "next";
 import Warning from "@/components/Warning";
 import { NotificationProvider } from "@/contexts/NotificationContext";
-import { Providers } from "./providers";
 import ClientWrapper from "./components/ClientWrapper";
 import Navigation from "./components/Navigation";
 import GlobalNav from "./components/GlobalNav";
+import ClientSessionWrapper from "./components/ClientSessionWrapper"; // Import ClientSessionWrapper
 
 export const metadata: Metadata = {
   title: "Crypto MVP",
@@ -17,7 +16,8 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body>
-        <Providers>
+        {/* Wrap the client-only parts with ClientSessionWrapper */}
+        <ClientSessionWrapper>
           <NotificationProvider>
             <div className="absolute top-0 left-0 w-full z-50"></div>
             <Warning />
@@ -27,7 +27,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
               <Navigation />
             </ClientWrapper>
           </NotificationProvider>
-        </Providers>
+        </ClientSessionWrapper>
       </body>
     </html>
   );

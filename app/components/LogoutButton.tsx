@@ -1,22 +1,18 @@
-// app/components/LogoutButton.tsx
 "use client";
 
 import { signOut } from "firebase/auth";
 import { auth } from "lib/firebaseConfig";
-import { useDisconnect } from "wagmi";
 import { useRouter } from "next/navigation";
 
 export default function LogoutButton() {
-  const { disconnect } = useDisconnect();
   const router = useRouter();
 
   const handleLogout = async () => {
     try {
       await signOut(auth); // Firebase logout
-      disconnect(); // MetaMask logout
-      router.push("/auth/login");
+      router.push("/auth/login"); // Redirect to login page after logout
     } catch (err) {
-      console.error(err);
+      console.error("Error logging out:", err);
     }
   };
 

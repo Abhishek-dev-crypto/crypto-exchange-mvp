@@ -4,28 +4,25 @@ import { useState } from "react";
 import Link from "next/link";
 
 export default function SecurityPage() {
-  // State to simulate 2FA enabling/disabling.
   const [twoFactorEnabled, setTwoFactorEnabled] = useState(false);
 
   return (
     <div className="min-h-screen bg-gray-50 text-gray-800 p-8 scroll-smooth" id="top">
       <div className="max-w-4xl mx-auto">
-        {/* Header */}
         <header className="mb-12 text-center">
           <h1 className="text-5xl font-bold mb-4 text-blue-700">
-            Security & Compliance
+            Security &amp; Compliance
           </h1>
           <p className="text-xl">
             Your safety is our top priority. Please review our security measures and legal notices.
           </p>
         </header>
 
-        {/* Two-Factor Authentication Section */}
         <section className="mb-12">
           <h2 className="text-3xl font-bold mb-4">Two-Factor Authentication (2FA)</h2>
           <p className="mb-4 text-lg">
             Enhance the security of your AllChain account by enabling Two-Factor Authentication (2FA).
-            With 2FA, you'll need an additional verification step (e.g., a code from your authenticator app)
+            With 2FA, you&apos;ll need an additional verification step (e.g., a code from your authenticator app)
             to access your account.
           </p>
           <div className="flex items-center">
@@ -44,9 +41,8 @@ export default function SecurityPage() {
           </p>
         </section>
 
-        {/* Risk Disclosures & Legal Notices Section */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Risk Disclosures & Legal Notices</h2>
+          <h2 className="text-3xl font-bold mb-4">Risk Disclosures &amp; Legal Notices</h2>
           <p className="mb-4 text-lg">
             Cryptocurrency trading involves significant risks. Please ensure you fully understand these risks before trading.
           </p>
@@ -69,19 +65,17 @@ export default function SecurityPage() {
           </p>
         </section>
 
-        {/* Security Tips & Scam Prevention Section */}
         <section className="mb-12">
-          <h2 className="text-3xl font-bold mb-4">Security Tips & Scam Prevention</h2>
+          <h2 className="text-3xl font-bold mb-4">Security Tips &amp; Scam Prevention</h2>
           <p className="text-lg">
             Always be cautious of unsolicited messages or requests for personal information. All official communications from AllChain will come through verified channels.
             If you suspect any fraudulent activity, report it immediately to our support team.
           </p>
           <p className="mt-4 text-lg">
-            Stay informed and vigilant—your security is our top priority.
+            Stay informed and vigilant&mdash;your security is our top priority.
           </p>
         </section>
 
-        {/* Back Link */}
         <div className="text-center mt-8">
           <Link href="/dashboard" className="text-blue-600 underline">
             Back to Dashboard

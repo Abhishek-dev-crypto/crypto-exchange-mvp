@@ -1,13 +1,14 @@
 /** @type {import('next').NextConfig} */
 const nextConfig = {
   reactStrictMode: true,
+  //output: "export", // ✅ Enable static export
   compiler: {
     styledComponents: true,
   },
   images: {
-    domains: ['coin-images.coingecko.com'], // ✅ for coin images
+    domains: ['coin-images.coingecko.com'],
+    unoptimized: true,
   },
-  output: 'export', // ✅ Enables static export for Netlify
   experimental: {},
   env: {
     NEXT_PUBLIC_WALLETCONNECT_PROJECT_ID: process.env.WALLETCONNECT_PROJECT_ID,

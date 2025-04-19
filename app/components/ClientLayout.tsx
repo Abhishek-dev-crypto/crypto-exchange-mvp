@@ -1,29 +1,20 @@
 "use client";
 
-import { WagmiConfig, createConfig, http } from "wagmi";
-import { mainnet } from "viem/chains";
-import { RainbowKitProvider } from "@rainbow-me/rainbowkit";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import "@rainbow-me/rainbowkit/styles.css";
-import "../styles/globals.css";
+import { SessionProvider, useSession } from "next-auth/react";
+import { ReactNode } from "react";
+import { usePathname } from "next/navigation";
+import Link from "next/link";
+import { Session } from "next-auth";
 import { MyContextProvider } from "@/contexts/MyContext";
 import { NotificationProvider } from "@/contexts/NotificationContext";
-import { SessionProvider, useSession } from "next-auth/react";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import type { ReactNode } from "react";
-import { Session } from "next-auth";
 
+import "../styles/globals.css";
+
+// ✅ Optional: Only needed if you're using React Query
 const queryClient = new QueryClient();
 
-const wagmiConfig = createConfig({
-  chains: [mainnet],
-  transports: {
-    [mainnet.id]: http(),
-  },
-});
-
-// ✅ GlobalNav stays the same
+// ✅ Navbar Component
 function GlobalNav() {
   return (
     <nav className="bg-gray-800 text-white px-4 py-3 flex flex-col md:flex-row items-center justify-between">
@@ -43,14 +34,12 @@ function GlobalNav() {
   );
 }
 
-// ✅ Inner component to handle session-aware logic
+// ✅ Logic for whether to show navbar
 function ClientLayoutInner({ children }: { children: ReactNode }) {
   const pathname = usePathname();
   const { data: session } = useSession();
 
   const isLoggedIn = !!session;
-
-  // Hide nav on landing page and all auth routes
   const shouldHideNav = pathname === "/" || pathname.startsWith("/auth");
   const shouldShowNav = isLoggedIn && !shouldHideNav;
 
@@ -62,26 +51,22 @@ function ClientLayoutInner({ children }: { children: ReactNode }) {
   );
 }
 
-// ✅ Outer layout wraps providers
+// ✅ Main Layout Component
 interface ClientLayoutProps {
   children: ReactNode;
-  session?: Session;
+  session?: Session; // You can use Session type from next-auth if needed
 }
 
 export default function ClientLayout({ children, session }: ClientLayoutProps) {
   return (
     <QueryClientProvider client={queryClient}>
-      <WagmiConfig config={wagmiConfig}>
-        <RainbowKitProvider>
-          <SessionProvider session={session}>
-            <MyContextProvider>
-              <NotificationProvider>
-                <ClientLayoutInner>{children}</ClientLayoutInner>
-              </NotificationProvider>
-            </MyContextProvider>
-          </SessionProvider>
-        </RainbowKitProvider>
-      </WagmiConfig>
+      <SessionProvider session={session}>
+        <MyContextProvider>
+          <NotificationProvider>
+            <ClientLayoutInner>{children}</ClientLayoutInner>
+          </NotificationProvider>
+        </MyContextProvider>
+      </SessionProvider>
     </QueryClientProvider>
   );
 }

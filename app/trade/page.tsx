@@ -7,9 +7,31 @@ import { Card } from '@/components/ui/card';
 import CandlestickChart from '@/components/CandlestickChart';
 import CoinList from '@/components/CoinList';
 import OrderPanel from '@/components/OrderPanel';
+import useSWR from 'swr';
+
+// Fetching coin data (SWR example)
+const fetchCoinData = async (coinId: string) => {
+  const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}`);
+  const data = await res.json();
+  return data;
+};
 
 export default function TradePage() {
   const [selectedCoin, setSelectedCoin] = useState('bitcoin');
+  const { data, error } = useSWR(selectedCoin, fetchCoinData);
+
+  const handleBuyClick = () => {
+    // Handle the logic for buying
+    console.log(`Buying ${selectedCoin}`);
+  };
+
+  const handleSellClick = () => {
+    // Handle the logic for selling
+    console.log(`Selling ${selectedCoin}`);
+  };
+
+  if (error) return <div>Error loading data</div>;
+  if (!data) return <div>Loading...</div>;
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -17,13 +39,13 @@ export default function TradePage() {
       <div className="flex justify-between items-center p-4 border-b border-neutral-800 sticky top-0 bg-black z-10">
         <div>
           <h1 className="text-xl font-bold">{selectedCoin.toUpperCase()}/USDT</h1>
-          <p className="text-sm text-gray-400">Last Price: 0.0000000656 USDT</p>
+          <p className="text-sm text-gray-400">Last Price: {data.market_data.current_price.usd} USDT</p>
         </div>
         <div className="flex gap-4 text-sm">
           <div>24h Change: <span className="text-green-400">+0.30%</span></div>
-          <div>High: 0.0000000664</div>
-          <div>Low: 0.0000000641</div>
-          <div>Volume: 32,910,088,820.92</div>
+          <div>High: {data.market_data.high_24h.usd}</div>
+          <div>Low: {data.market_data.low_24h.usd}</div>
+          <div>Volume: {data.market_data.total_volume.usd}</div>
         </div>
       </div>
 
@@ -41,8 +63,20 @@ export default function TradePage() {
           </Card>
 
           <div className="flex gap-4">
-            <Button className="flex-1 bg-green-600 hover:bg-green-700">BUY {selectedCoin.toUpperCase()}</Button>
-            <Button className="flex-1 bg-red-600 hover:bg-red-700">SELL {selectedCoin.toUpperCase()}</Button>
+            <Button
+              className="flex-1 bg-green-600 hover:bg-green-700"
+              onClick={handleBuyClick}
+              aria-label={`Buy ${selectedCoin.toUpperCase()}`}
+            >
+              BUY {selectedCoin.toUpperCase()}
+            </Button>
+            <Button
+              className="flex-1 bg-red-600 hover:bg-red-700"
+              onClick={handleSellClick}
+              aria-label={`Sell ${selectedCoin.toUpperCase()}`}
+            >
+              SELL {selectedCoin.toUpperCase()}
+            </Button>
           </div>
         </main>
 

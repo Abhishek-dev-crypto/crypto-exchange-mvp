@@ -9,6 +9,7 @@ import { Card } from '@/components/ui/card';
 import type { ApexOptions } from 'apexcharts';
 import toast, { Toaster } from 'react-hot-toast';
 
+
 const ApexChart = dynamic(() => import('react-apexcharts'), { ssr: false });
 
 interface CandlestickChartProps {
@@ -88,9 +89,6 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ coinId }) => {
     fetchOHLCData();
   }, [coinId, range]);
 
-  const handleTradeClick = () => {
-    toast('🚀 Stay tuned! Trading will be live soon.');
-  };
 
   const options: ApexOptions = {
     chart: {
@@ -122,9 +120,7 @@ const CandlestickChart: React.FC<CandlestickChartProps> = ({ coinId }) => {
       {/* Header */}
       <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-3 gap-2">
         <div className="flex items-center gap-2">
-          {coinMeta?.image && (
-            <img src={coinMeta.image} alt={coinMeta.name} className="w-6 h-6 rounded-full" />
-          )}
+          
           <h2 className="text-xl font-semibold text-white tracking-wide">
             {coinMeta ? `${coinMeta.name} (${coinMeta.symbol?.toUpperCase()}) / USD` : 'Loading...'}
           </h2>

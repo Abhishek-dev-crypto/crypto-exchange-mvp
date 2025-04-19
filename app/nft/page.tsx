@@ -1,3 +1,5 @@
+'use client';
+
 export default function NFTPage() {
     return (
       <div className="flex items-center justify-center h-screen">

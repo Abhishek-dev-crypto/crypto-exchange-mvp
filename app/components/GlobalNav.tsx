@@ -9,9 +9,6 @@ export default function GlobalNav() {
   const pathname = usePathname();
   const [menuOpen, setMenuOpen] = useState(false);
 
-  const isActive = (path: string) =>
-    pathname === path ? 'text-blue-400 font-semibold' : 'hover:text-blue-400';
-
   const toggleMenu = () => setMenuOpen(!menuOpen);
 
   return (

@@ -10,9 +10,7 @@ export default function SupportPage() {
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    // For MVP, simulate sending the support request.
     setSubmitted(true);
-    // In production, you would send the message to your support API endpoint.
   };
 
   return (
@@ -25,38 +23,7 @@ export default function SupportPage() {
           </p>
         </header>
 
-        {/* FAQ Section */}
-        <section className="mb-12">
-          <h2 className="text-3xl font-semibold mb-4">Frequently Asked Questions</h2>
-          <div className="space-y-6">
-            <div>
-              <h3 className="text-2xl font-bold">How do I create an account?</h3>
-              <p className="mt-2">
-                To create an account, click on the "Sign Up" button on the login page and follow the on‑screen instructions.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold">How can I deposit funds?</h3>
-              <p className="mt-2">
-                Once your account is set up, navigate to your Dashboard and follow the deposit instructions. We support several payment methods.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold">What are the fees for trading?</h3>
-              <p className="mt-2">
-                Our fee structure is transparent and competitive. Please check the Fees section on our website for detailed information.
-              </p>
-            </div>
-            <div>
-              <h3 className="text-2xl font-bold">How do I secure my account?</h3>
-              <p className="mt-2">
-                We highly recommend enabling Two-Factor Authentication (2FA) for an extra layer of security. You can manage your security settings in your profile.
-              </p>
-            </div>
-          </div>
-        </section>
-
-        {/* Contact Support Section */}
+        {/* Contact Support Form */}
         <section className="mb-12">
           <h2 className="text-3xl font-semibold mb-4">Contact Support</h2>
           {submitted ? (
@@ -100,12 +67,6 @@ export default function SupportPage() {
               </button>
             </form>
           )}
-          <p className="mt-4 text-center text-gray-600">
-            Alternatively, you can email us at{" "}
-            <a href="mailto:support@allchain.com" className="text-blue-600 underline">
-              support@allchain.com
-            </a>
-          </p>
         </section>
       </div>
     </div>

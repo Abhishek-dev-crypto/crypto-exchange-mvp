@@ -1,7 +1,6 @@
 'use client';
 
 import { useState, useEffect, FormEvent } from "react";
-import { useAccount } from "wagmi";
 import { onAuthStateChanged } from "firebase/auth";
 import { auth } from "lib/firebaseConfig";
 import ProtectedRoute from "@/components/ProtectedRoute";
@@ -21,7 +20,6 @@ const dummyAccountData = {
 };
 
 export default function DashboardPage() {
-  const { isConnected } = useAccount();
   const [profile, setProfile] = useState({ name: "", email: "" });
   const [updateMessage, setUpdateMessage] = useState("");
   const [loading, setLoading] = useState(true);
