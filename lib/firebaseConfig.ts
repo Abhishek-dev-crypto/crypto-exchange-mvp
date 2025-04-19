@@ -1,7 +1,8 @@
-// crypto-mvp/lib/firebaseConfig.ts
-import { initializeApp } from "firebase/app";
-import { getAuth, GoogleAuthProvider } from "firebase/auth";
+// lib/firebaseConfig.ts
+import { initializeApp } from 'firebase/app';
+import { getAuth, GoogleAuthProvider } from 'firebase/auth';
 
+// Firebase configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBKHqrZIGMn1_oMRbHn-0rYkGT-dV24F1U",
   authDomain: "allchain-mvp.firebaseapp.com",
@@ -12,7 +13,10 @@ const firebaseConfig = {
   measurementId: "G-W3ERYPVTN7"
 };
 
+// Initialize Firebase app
 const app = initializeApp(firebaseConfig);
+
+// Initialize authentication and Google provider
 const auth = getAuth(app);
 const googleProvider = new GoogleAuthProvider();
 
