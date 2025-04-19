@@ -4,7 +4,8 @@ import { useRef, useState } from 'react';
 import useSWR from 'swr';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
-import { signIn } from 'next-auth/react';
+import { signInWithPopup } from 'firebase/auth';
+import { auth, googleProvider } from 'lib/firebaseConfig'; // Assuming you already have this Firebase setup
 
 interface CryptoData {
   [key: string]: {
@@ -33,7 +34,10 @@ export default function HomePage() {
 
   const handleGoogleLogin = async () => {
     try {
-      await signIn('google', { callbackUrl: '/home' });
+      // Firebase Google Sign-In
+      await signInWithPopup(auth, googleProvider);
+      // Redirect to home or any other page after successful login
+      window.location.href = '/home';
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
