@@ -36,8 +36,9 @@ export default function HomePage() {
 
   const handleGoogleLogin = async () => {
     try {
+      // Sign in with Google using Firebase
       await signInWithPopup(auth, googleProvider);
-      router.push('/trade'); // Redirect to /trade
+      router.push('/trade'); // Redirect to /trade without reloading the page
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
