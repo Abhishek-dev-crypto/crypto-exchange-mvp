@@ -4,6 +4,7 @@ import React, { useState } from 'react';
 import useSWR from 'swr';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
+import { Card } from '@/components/ui/card';
 import CandlestickChart from '@/components/CandlestickChart';
 import CoinList from '@/components/CoinList';
 import OrderPanel from '@/components/OrderPanel';
@@ -68,12 +69,14 @@ export default function TradePage() {
 
         {/* Center Panel */}
         <main className="flex-1 p-4 overflow-y-auto space-y-4">
-          <CandlestickChart
-            coinId={selectedCoin}
-            name={selectedCoin.toUpperCase()}
-            symbol={''}
-            image={''}
-          />
+          <Card className="p-4">
+            <CandlestickChart
+              coinId={selectedCoin} // Keep coinId prop unchanged for chart update
+              name={selectedCoin.toUpperCase()}
+              symbol={''}
+              image={''}
+            />
+          </Card>
 
           <div className="flex gap-4">
             <Button
