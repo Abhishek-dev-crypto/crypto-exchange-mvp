@@ -1,10 +1,9 @@
-// /lib/useFirebaseAuth.ts
 import { useEffect, useState } from "react";
-import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut } from "firebase/auth";
+import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, User } from "firebase/auth"; // Import User type
 import { auth } from "./firebaseConfig";
 
 const useFirebaseAuth = () => {
-  const [user, setUser] = useState<any>(null);
+  const [user, setUser] = useState<User | null>(null); // Use the User type instead of 'any'
   const [loading, setLoading] = useState(true);
 
   const login = async () => {
