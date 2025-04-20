@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import useSWR from 'swr';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -8,6 +8,7 @@ import { Card } from '@/components/ui/card';
 import CandlestickChart from '@/components/CandlestickChart';
 import CoinList from '@/components/CoinList';
 import OrderPanel from '@/components/OrderPanel';
+import { debounce } from 'lodash';
 
 const fetchCoinData = async (coinId: string) => {
   const res = await fetch(`/api/coins?coinId=${coinId}`);
@@ -17,12 +18,35 @@ const fetchCoinData = async (coinId: string) => {
 
 export default function TradePage() {
   const [selectedCoin, setSelectedCoin] = useState('bitcoin');
+  const [debouncedCoin, setDebouncedCoin] = useState(selectedCoin);
 
   const handleSelectCoin = useCallback((coinId: string) => {
     setSelectedCoin(coinId);
+    setDebouncedCoin(coinId); // Update the debounced coin state
   }, []);
 
-  const { data, error, isLoading } = useSWR(selectedCoin, fetchCoinData);
+  // Debounced fetch for coin data
+  const debouncedFetch = useCallback(debounce(() => {
+    setDebouncedCoin(selectedCoin); // Trigger update when selected coin changes
+  }, 500), [selectedCoin]); // Delay for debounced function
+
+  // Call the debounced function whenever selectedCoin changes
+  useEffect(() => {
+    debouncedFetch();
+    return () => {
+      debouncedFetch.cancel();
+    };
+  }, [selectedCoin, debouncedFetch]);
+
+  const { data, error, isLoading } = useSWR(debouncedCoin, fetchCoinData);
+
+  if (error) {
+    return (
+      <div className="text-red-400 p-4">
+        Error fetching data: {error.message}
+      </div>
+    );
+  }
 
   return (
     <div className="bg-black text-white min-h-screen">
