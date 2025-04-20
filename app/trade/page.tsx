@@ -1,19 +1,19 @@
 'use client';
 
 import React, { useState } from 'react';
+import useSWR from 'swr';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import { Card } from '@/components/ui/card';
 import CandlestickChart from '@/components/CandlestickChart';
 import CoinList from '@/components/CoinList';
 import OrderPanel from '@/components/OrderPanel';
-import useSWR from 'swr';
 
-// Fetching coin data (SWR example)
+// Fetching coin data
 const fetchCoinData = async (coinId: string) => {
   const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}`);
-  const data = await res.json();
-  return data;
+  if (!res.ok) throw new Error('Failed to fetch coin data');
+  return res.json();
 };
 
 export default function TradePage() {
@@ -21,45 +21,61 @@ export default function TradePage() {
   const { data, error } = useSWR(selectedCoin, fetchCoinData);
 
   const handleBuyClick = () => {
-    // Handle the logic for buying
     console.log(`Buying ${selectedCoin}`);
   };
 
   const handleSellClick = () => {
-    // Handle the logic for selling
     console.log(`Selling ${selectedCoin}`);
   };
 
-  if (error) return <div>Error loading data</div>;
-  if (!data) return <div>Loading...</div>;
+  if (error) return <div className="text-red-500 p-4">Error loading data.</div>;
+  if (!data) return <div className="text-white p-4">Loading...</div>;
 
   return (
     <div className="bg-black text-white min-h-screen">
-      {/* Top Bar */}
+      {/* Header */}
       <div className="flex justify-between items-center p-4 border-b border-neutral-800 sticky top-0 bg-black z-10">
         <div>
           <h1 className="text-xl font-bold">{selectedCoin.toUpperCase()}/USDT</h1>
-          <p className="text-sm text-gray-400">Last Price: {data.market_data.current_price.usd} USDT</p>
+          <p className="text-sm text-gray-400">
+            Last Price: {data.market_data.current_price.usd} USDT
+          </p>
         </div>
-        <div className="flex gap-4 text-sm">
-          <div>24h Change: <span className="text-green-400">+0.30%</span></div>
+        <div className="flex gap-4 text-sm text-gray-400">
+          <div>
+            24h Change:{' '}
+            <span
+              className={
+                data.market_data.price_change_percentage_24h >= 0
+                  ? 'text-green-400'
+                  : 'text-red-400'
+              }
+            >
+              {data.market_data.price_change_percentage_24h.toFixed(2)}%
+            </span>
+          </div>
           <div>High: {data.market_data.high_24h.usd}</div>
           <div>Low: {data.market_data.low_24h.usd}</div>
           <div>Volume: {data.market_data.total_volume.usd}</div>
         </div>
       </div>
 
-      {/* Main Content */}
+      {/* Main Grid */}
       <div className="flex h-[calc(100vh-64px)] overflow-hidden">
-        {/* Left Sidebar */}
+        {/* Coin List Sidebar */}
         <aside className="w-64 bg-neutral-900 p-2 overflow-y-auto">
           <CoinList selectedCoin={selectedCoin} onSelectCoin={setSelectedCoin} />
         </aside>
 
-        {/* Main Area */}
+        {/* Center Panel */}
         <main className="flex-1 p-4 overflow-y-auto space-y-4">
           <Card className="p-4">
-            <CandlestickChart coinId={selectedCoin} name={selectedCoin.toUpperCase()} symbol={''} image={''} />
+            <CandlestickChart
+              coinId={selectedCoin}
+              name={selectedCoin.toUpperCase()}
+              symbol={''}
+              image={''}
+            />
           </Card>
 
           <div className="flex gap-4">
@@ -80,11 +96,11 @@ export default function TradePage() {
           </div>
         </main>
 
-        {/* Right Sidebar */}
+        {/* Orders Sidebar */}
         <OrderPanel />
       </div>
 
-      {/* Bottom Section */}
+      {/* Bottom Wallet / Orders Tabs */}
       <div className="bg-neutral-900 p-4 mt-4">
         <Tabs defaultValue="wallet">
           <TabsList className="space-x-2">
@@ -94,7 +110,7 @@ export default function TradePage() {
           </TabsList>
 
           <TabsContent value="wallet">
-            <div className="mt-2 text-sm text-white">Total Asset Value: ₹18,998.53</div>
+            <div className="mt-2 text-sm">Total Asset Value: ₹18,998.53</div>
             <ul className="text-xs text-gray-300 mt-2 space-y-1">
               <li>AGG: ₹1,471.61</li>
               <li>BTTC: ₹189.25</li>

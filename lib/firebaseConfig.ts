@@ -1,6 +1,8 @@
 // lib/firebaseConfig.ts
-import { initializeApp } from 'firebase/app';
+import { initializeApp, getApps, getApp } from "firebase/app";
 import { getAuth, GoogleAuthProvider } from 'firebase/auth';
+
+
 
 // Firebase configuration
 const firebaseConfig = {

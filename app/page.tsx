@@ -5,7 +5,8 @@ import useSWR from 'swr';
 import { motion } from 'framer-motion';
 import { Button } from '@/components/ui/button';
 import { signInWithPopup } from 'firebase/auth';
-import { auth, googleProvider } from 'lib/firebaseConfig'; // Assuming you already have this Firebase setup
+import { auth, googleProvider } from 'lib/firebaseConfig';
+import { useRouter } from 'next/navigation';
 
 interface CryptoData {
   [key: string]: {
@@ -31,13 +32,12 @@ export default function HomePage() {
   const loginRef = useRef<HTMLDivElement>(null);
   const [showLoginBox, setShowLoginBox] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const router = useRouter();
 
   const handleGoogleLogin = async () => {
     try {
-      // Firebase Google Sign-In
       await signInWithPopup(auth, googleProvider);
-      // Redirect to home or any other page after successful login
-      window.location.href = '/home';
+      router.push('/trade'); // Redirect to /trade
     } catch (err: unknown) {
       if (err instanceof Error) {
         setError(err.message);
@@ -105,7 +105,7 @@ export default function HomePage() {
             strokeWidth="1.5"
             viewBox="0 0 24 24"
           >
-            <path d="M12 2L2 21h20L12 2z" /> {/* A basic triangle */}
+            <path d="M12 2L2 21h20L12 2z" />
           </svg>
         </div>
       </motion.section>
@@ -166,10 +166,10 @@ export default function HomePage() {
 
         <div className="grid grid-cols-1 md:grid-cols-3 gap-10 max-w-6xl mx-auto">
           {[{ title: 'Low Fees', description: 'Trade crypto with minimal costs and maximum value.', icon: '💸' },
-            { title: 'Secure Wallet', description: 'Top-tier encryption keeps your assets safe and sound.', icon: '🔐' },
-            { title: 'NFT Marketplace', description: 'Seamlessly buy, sell, and discover digital collectibles.', icon: '🖼️' }].map((item) => (
-              <FeatureCard key={item.title} {...item} />
-            ))}
+          { title: 'Secure Wallet', description: 'Top-tier encryption keeps your assets safe and sound.', icon: '🔐' },
+          { title: 'NFT Marketplace', description: 'Seamlessly buy, sell, and discover digital collectibles.', icon: '🖼️' }].map((item) => (
+            <FeatureCard key={item.title} {...item} />
+          ))}
         </div>
       </section>
     </div>
