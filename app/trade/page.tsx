@@ -9,9 +9,9 @@ import CandlestickChart from '@/components/CandlestickChart';
 import CoinList from '@/components/CoinList';
 import OrderPanel from '@/components/OrderPanel';
 
-// Fetching coin data
+// Fetching coin data from the API route
 const fetchCoinData = async (coinId: string) => {
-  const res = await fetch(`https://api.coingecko.com/api/v3/coins/${coinId}`);
+  const res = await fetch(`/api/coins?coinId=${coinId}`);
   if (!res.ok) throw new Error('Failed to fetch coin data');
   return res.json();
 };
@@ -71,7 +71,7 @@ export default function TradePage() {
         <main className="flex-1 p-4 overflow-y-auto space-y-4">
           <Card className="p-4">
             <CandlestickChart
-              coinId={selectedCoin} // Keep coinId prop unchanged for chart update
+              coinId={selectedCoin}
               name={selectedCoin.toUpperCase()}
               symbol={''}
               image={''}
