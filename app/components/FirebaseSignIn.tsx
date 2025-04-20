@@ -3,6 +3,7 @@
 import { getAuth, signInWithEmailAndPassword } from 'firebase/auth';
 import { useState } from 'react';
 import { useRouter } from 'next/router';
+import { FirebaseError } from 'firebase/app';  // Import FirebaseError
 
 const FirebaseSignIn = () => {
   const [email, setEmail] = useState('');
@@ -20,15 +21,19 @@ const FirebaseSignIn = () => {
       await signInWithEmailAndPassword(auth, email, password);
       console.log("✅ Firebase email sign-in successful");
       router.push("/trade");  // Redirect to the trade page after successful sign-in
-    } catch (err: any) {
-      if (err.code === 'auth/user-not-found') {
-        setError('❌ No user found with this email.');
-      } else if (err.code === 'auth/wrong-password') {
-        setError('❌ Incorrect password.');
+    } catch (err: unknown) {  // Catch block now uses `unknown` type
+      if (err instanceof FirebaseError) {  // Type check the error
+        if (err.code === 'auth/user-not-found') {
+          setError('❌ No user found with this email.');
+        } else if (err.code === 'auth/wrong-password') {
+          setError('❌ Incorrect password.');
+        } else {
+          setError('❌ Error signing in with Firebase.');
+        }
+        console.error(err);
       } else {
-        setError('❌ Error signing in with Firebase.');
+        setError('❌ Unexpected error occurred.');
       }
-      console.error(err);
     } finally {
       setLoading(false); // Set loading to false when done
     }

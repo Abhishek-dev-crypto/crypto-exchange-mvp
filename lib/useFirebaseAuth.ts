@@ -3,7 +3,7 @@ import { GoogleAuthProvider, signInWithPopup, onAuthStateChanged, signOut, User 
 import { auth } from "./firebaseConfig";
 
 const useFirebaseAuth = () => {
-  const [user, setUser] = useState<User | null>(null); // Use the User type instead of 'any'
+  const [user, setUser] = useState<User | null>(null); 
   const [loading, setLoading] = useState(true);
 
   const login = async () => {
