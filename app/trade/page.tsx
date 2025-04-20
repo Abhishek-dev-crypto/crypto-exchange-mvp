@@ -8,8 +8,8 @@ import { Card } from '@/components/ui/card';
 import CandlestickChart from '@/components/CandlestickChart';
 import CoinList from '@/components/CoinList';
 import OrderPanel from '@/components/OrderPanel';
+import { AnimatePresence, motion } from 'framer-motion';
 
-// Fetching coin data from the API route
 const fetchCoinData = async (coinId: string) => {
   const res = await fetch(`/api/coins?coinId=${coinId}`);
   if (!res.ok) throw new Error('Failed to fetch coin data');
@@ -18,7 +18,8 @@ const fetchCoinData = async (coinId: string) => {
 
 export default function TradePage() {
   const [selectedCoin, setSelectedCoin] = useState('bitcoin');
-  const { data, error } = useSWR(selectedCoin, fetchCoinData);
+
+  const { data, error, isLoading } = useSWR(selectedCoin, fetchCoinData);
 
   const handleBuyClick = () => {
     console.log(`Buying ${selectedCoin}`);
@@ -28,36 +29,37 @@ export default function TradePage() {
     console.log(`Selling ${selectedCoin}`);
   };
 
-  if (error) return <div className="text-red-500 p-4">Error loading data.</div>;
-  if (!data) return <div className="text-white p-4">Loading...</div>;
-
   return (
     <div className="bg-black text-white min-h-screen">
       {/* Header */}
       <div className="flex justify-between items-center p-4 border-b border-neutral-800 sticky top-0 bg-black z-10">
         <div>
           <h1 className="text-xl font-bold">{selectedCoin.toUpperCase()}/USDT</h1>
-          <p className="text-sm text-gray-400">
-            Last Price: {data.market_data.current_price.usd} USDT
-          </p>
+          {data && (
+            <p className="text-sm text-gray-400">
+              Last Price: {data.market_data.current_price.usd} USDT
+            </p>
+          )}
         </div>
-        <div className="flex gap-4 text-sm text-gray-400">
-          <div>
-            24h Change:{' '}
-            <span
-              className={
-                data.market_data.price_change_percentage_24h >= 0
-                  ? 'text-green-400'
-                  : 'text-red-400'
-              }
-            >
-              {data.market_data.price_change_percentage_24h.toFixed(2)}%
-            </span>
+        {data && (
+          <div className="flex gap-4 text-sm text-gray-400">
+            <div>
+              24h Change:{' '}
+              <span
+                className={
+                  data.market_data.price_change_percentage_24h >= 0
+                    ? 'text-green-400'
+                    : 'text-red-400'
+                }
+              >
+                {data.market_data.price_change_percentage_24h.toFixed(2)}%
+              </span>
+            </div>
+            <div>High: {data.market_data.high_24h.usd}</div>
+            <div>Low: {data.market_data.low_24h.usd}</div>
+            <div>Volume: {data.market_data.total_volume.usd}</div>
           </div>
-          <div>High: {data.market_data.high_24h.usd}</div>
-          <div>Low: {data.market_data.low_24h.usd}</div>
-          <div>Volume: {data.market_data.total_volume.usd}</div>
-        </div>
+        )}
       </div>
 
       {/* Main Grid */}
@@ -70,12 +72,27 @@ export default function TradePage() {
         {/* Center Panel */}
         <main className="flex-1 p-4 overflow-y-auto space-y-4">
           <Card className="p-4">
-            <CandlestickChart
-              coinId={selectedCoin}
-              name={selectedCoin.toUpperCase()}
-              symbol={''}
-              image={''}
-            />
+            <AnimatePresence mode="wait">
+              <motion.div
+                key={selectedCoin}
+                initial={{ opacity: 0 }}
+                animate={{ opacity: 1 }}
+                exit={{ opacity: 0 }}
+              >
+                {isLoading ? (
+                  <div className="text-white">Loading...</div>
+                ) : error ? (
+                  <div className="text-red-500">Error loading coin data</div>
+                ) : (
+                  <CandlestickChart
+                    coinId={selectedCoin}
+                    name={selectedCoin.toUpperCase()}
+                    symbol={''}
+                    image={''}
+                  />
+                )}
+              </motion.div>
+            </AnimatePresence>
           </Card>
 
           <div className="flex gap-4">
