@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState } from 'react';
+import React, { useState, useCallback } from 'react';
 import useSWR from 'swr';
 import { Button } from '@/components/ui/button';
 import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
@@ -8,7 +8,6 @@ import { Card } from '@/components/ui/card';
 import CandlestickChart from '@/components/CandlestickChart';
 import CoinList from '@/components/CoinList';
 import OrderPanel from '@/components/OrderPanel';
-import { AnimatePresence, motion } from 'framer-motion';
 
 const fetchCoinData = async (coinId: string) => {
   const res = await fetch(`/api/coins?coinId=${coinId}`);
@@ -19,15 +18,11 @@ const fetchCoinData = async (coinId: string) => {
 export default function TradePage() {
   const [selectedCoin, setSelectedCoin] = useState('bitcoin');
 
+  const handleSelectCoin = useCallback((coinId: string) => {
+    setSelectedCoin(coinId);
+  }, []);
+
   const { data, error, isLoading } = useSWR(selectedCoin, fetchCoinData);
-
-  const handleBuyClick = () => {
-    console.log(`Buying ${selectedCoin}`);
-  };
-
-  const handleSellClick = () => {
-    console.log(`Selling ${selectedCoin}`);
-  };
 
   return (
     <div className="bg-black text-white min-h-screen">
@@ -35,89 +30,72 @@ export default function TradePage() {
       <div className="flex justify-between items-center p-4 border-b border-neutral-800 sticky top-0 bg-black z-10">
         <div>
           <h1 className="text-xl font-bold">{selectedCoin.toUpperCase()}/USDT</h1>
-          {data && (
-            <p className="text-sm text-gray-400">
-              Last Price: {data.market_data.current_price.usd} USDT
-            </p>
-          )}
+          <p className="text-sm text-gray-400">
+            Last Price: {data?.market_data?.current_price?.usd ?? '...'} USDT
+          </p>
         </div>
-        {data && (
-          <div className="flex gap-4 text-sm text-gray-400">
-            <div>
-              24h Change:{' '}
-              <span
-                className={
-                  data.market_data.price_change_percentage_24h >= 0
-                    ? 'text-green-400'
-                    : 'text-red-400'
-                }
-              >
-                {data.market_data.price_change_percentage_24h.toFixed(2)}%
-              </span>
-            </div>
-            <div>High: {data.market_data.high_24h.usd}</div>
-            <div>Low: {data.market_data.low_24h.usd}</div>
-            <div>Volume: {data.market_data.total_volume.usd}</div>
+        <div className="flex gap-4 text-sm text-gray-400">
+          <div>
+            24h Change:{' '}
+            <span
+              className={
+                data?.market_data?.price_change_percentage_24h >= 0
+                  ? 'text-green-400'
+                  : 'text-red-400'
+              }
+            >
+              {data?.market_data?.price_change_percentage_24h?.toFixed(2) ?? '...'}%
+            </span>
           </div>
-        )}
+          <div>High: {data?.market_data?.high_24h?.usd ?? '...'}</div>
+          <div>Low: {data?.market_data?.low_24h?.usd ?? '...'}</div>
+          <div>Volume: {data?.market_data?.total_volume?.usd ?? '...'}</div>
+        </div>
       </div>
 
       {/* Main Grid */}
       <div className="flex h-[calc(100vh-64px)] overflow-hidden">
-        {/* Coin List Sidebar */}
+        {/* Sidebar */}
         <aside className="w-64 bg-neutral-900 p-2 overflow-y-auto">
-          <CoinList selectedCoin={selectedCoin} onSelectCoin={setSelectedCoin} />
+          <CoinList selectedCoin={selectedCoin} onSelectCoin={handleSelectCoin} />
         </aside>
 
-        {/* Center Panel */}
+        {/* Main */}
         <main className="flex-1 p-4 overflow-y-auto space-y-4">
           <Card className="p-4">
-            <AnimatePresence mode="wait">
-              <motion.div
-                key={selectedCoin}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: 1 }}
-                exit={{ opacity: 0 }}
-              >
-                {isLoading ? (
-                  <div className="text-white">Loading...</div>
-                ) : error ? (
-                  <div className="text-red-500">Error loading coin data</div>
-                ) : (
-                  <CandlestickChart
-                    coinId={selectedCoin}
-                    name={selectedCoin.toUpperCase()}
-                    symbol={''}
-                    image={''}
-                  />
-                )}
-              </motion.div>
-            </AnimatePresence>
+            {isLoading ? (
+              <div className="text-gray-400">Loading chart...</div>
+            ) : (
+              <CandlestickChart
+                coinId={selectedCoin}
+                name={selectedCoin.toUpperCase()}
+                symbol=""
+                image=""
+              />
+            )}
           </Card>
 
           <div className="flex gap-4">
             <Button
               className="flex-1 bg-green-600 hover:bg-green-700"
-              onClick={handleBuyClick}
-              aria-label={`Buy ${selectedCoin.toUpperCase()}`}
+              onClick={() => console.log(`Buy ${selectedCoin}`)}
             >
               BUY {selectedCoin.toUpperCase()}
             </Button>
             <Button
               className="flex-1 bg-red-600 hover:bg-red-700"
-              onClick={handleSellClick}
-              aria-label={`Sell ${selectedCoin.toUpperCase()}`}
+              onClick={() => console.log(`Sell ${selectedCoin}`)}
             >
               SELL {selectedCoin.toUpperCase()}
             </Button>
           </div>
         </main>
 
-        {/* Orders Sidebar */}
+        {/* Order Panel */}
         <OrderPanel />
       </div>
 
-      {/* Bottom Wallet / Orders Tabs */}
+      {/* Bottom Tabs */}
       <div className="bg-neutral-900 p-4 mt-4">
         <Tabs defaultValue="wallet">
           <TabsList className="space-x-2">
